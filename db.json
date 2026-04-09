@@ -1,0 +1,99 @@
+{
+  "vehicles": [
+    {
+      "id": "V001",
+      "reg": "TN-52-AD-7585",
+      "customer": "C045",
+      "model": "Mahindra 575",
+      "status": "Due This Week",
+      "billableItems": [],
+      "totalAmount": 0,
+      "paymentStatus": "Pending",
+      "isDispatched": false
+    },
+    {
+      "id": "V002",
+      "reg": "TN-30-U-6968",
+      "customer": "C048",
+      "model": "Mahindra XUV",
+      "status": "Due This Week",
+      "billableItems": [],
+      "totalAmount": 0,
+      "paymentStatus": "Pending",
+      "isDispatched": false
+    },
+    {
+      "id": "V003",
+      "reg": "TN-52-AB-1258",
+      "customer": "C001",
+      "model": "Mahindra pickup",
+      "status": "Under Servicing",
+      "billableItems": [],
+      "totalAmount": 0,
+      "paymentStatus": "Pending",
+      "isDispatched": false
+    },
+    {
+      "id": "V004",
+      "reg": "TN-52-AF-6565",
+      "customer": "C090",
+      "model": "Ashok leyland",
+      "status": "Serviced",
+      "billableItems": [
+        {
+          "id": "W001",
+          "name": "Engine Oil",
+          "price": 1500
+        }
+      ],
+      "totalAmount": 1500,
+      "paymentStatus": "Pending",
+      "isDispatched": false
+    }
+  ],
+  "customers": [
+    {
+      "id": "C001",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "phone": "9876543210"
+    },
+    {
+      "id": "C002",
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "phone": "8765432109"
+    }
+  ],
+  "serviceAdvisors": [
+    {
+      "id": "SA001",
+      "name": "Michael Scott",
+      "email": "michael@dundermifflin.com",
+      "phone": "9998887776"
+    },
+    {
+      "id": "SA002",
+      "name": "Tharnish",
+      "email": "tharnish@gmail.com",
+      "phone": "9874563210"
+    }
+  ],
+  "workItems": [
+    {
+      "id": "W001",
+      "name": "Engine Oil",
+      "price": 1500
+    },
+    {
+      "id": "W002",
+      "name": "Fuel Filter",
+      "price": 500
+    },
+    {
+      "id": "W003",
+      "name": "Air Filter",
+      "price": "2000"
+    }
+  ]
+}

@@ -29,6 +29,13 @@ export default function Sidebar() {
         Master Data
       </button>
 
+      <button
+        onClick={() => router.push("/billing")}
+        style={pathname === "/billing" ? styles.active : styles.link}
+      >
+        Billing & Dispatch
+      </button>
+
       <button onClick={handleLogout} style={styles.logout}>
         Logout
       </button>
@@ -40,7 +47,7 @@ const styles = {
   sidebar: {
     width: "220px",
     height: "100vh",
-    background: "#f1f5f9",
+    background: "#2d9c9c",
     display: "flex",
     flexDirection: "column",
     padding: "20px",

@@ -1,69 +1,42 @@
 "use client";
 
 import Sidebar from "../../components/Sidebar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function AdminDashboard() {
-  const [vehicles, setVehicles] = useState([
-    {
-      id: "V001",
-      reg: "TN-01-AB-1234",
-      model: "Honda City",
-      status: "Under Servicing",
-      customer: "C001",
-      serviceDate: "2026-04-08",
-    },
-    {
-      id: "V002",
-      reg: "TN-12-PQ-9988",
-      model: "Hyundai Creta",
-      status: "Serviced",
-      customer: "C002",
-      serviceDate: "2026-04-07",
-    },
-    {
-      id: "V003",
-      reg: "TN-05-XY-5678",
-      model: "Tata Nexon",
-      status: "Under Servicing",
-      customer: "C003",
-      serviceDate: "2026-04-10",
-    },
-    {
-      id: "V004",
-      reg: "TN-09-UV-1234",
-      model: "Maruti Swift",
-      status: "Due This Week",
-      customer: "C004",
-      serviceDate: "2026-04-09",
-    },
-    {
-      id: "V005",
-      reg: "TN-02-CD-5678",
-      model: "Toyota Innova",
-      status: "Due This Week",
-      customer: "C005",
-      serviceDate: "2026-04-10",
-    },
-  ]);
-
+  const [vehicles, setVehicles] = useState([]);
+  
+  useEffect(() => {
+    fetch("http://localhost:3001/vehicles")
+      .then(res => res.json())
+      .then(data => setVehicles(data))
+      .catch(err => console.error("Error fetching vehicles:", err));
+  }, []);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
   const markComplete = (id) => {
-    setVehicles((prev) =>
-      prev.map((v) =>
-        v.id === id ? { ...v, status: "Serviced" } : v
-      )
-    );
+    fetch(`http://localhost:3001/vehicles/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Serviced" })
+    })
+    .then(res => res.json())
+    .then(updatedVehicle => {
+      setVehicles((prev) => prev.map((v) => v.id === id ? updatedVehicle : v));
+    });
   };
 
   const assignToSA = (id) => {
-    setVehicles((prev) =>
-      prev.map((v) =>
-        v.id === id ? { ...v, status: "Under Servicing" } : v
-      )
-    );
-    alert("Vehicle assigned to Service Advisor");
+    fetch(`http://localhost:3001/vehicles/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: "Under Servicing" })
+    })
+    .then(res => res.json())
+    .then(updatedVehicle => {
+      setVehicles((prev) => prev.map((v) => v.id === id ? updatedVehicle : v));
+      alert("Vehicle assigned to Service Advisor");
+    });
   };
 
   const underServicing = vehicles.filter(
@@ -215,8 +188,12 @@ const styles = {
   main: {
     flex: 1,
     padding: "20px",
-    background: "#ffffff",
+    backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/admin_bg.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "fixed",
     minHeight: "100vh",
+    color: "#fff",
   },
 
   topbar: {
@@ -247,16 +224,18 @@ const styles = {
   },
 
   card: {
-    background: "#f9fafb",
+    background: "rgba(255, 255, 255, 0.05)",
     padding: "20px",
-    borderRadius: "10px",
-    border: "1px solid #ddd",
+    borderRadius: "12px",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    backdropFilter: "blur(12px)",
+    boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
   },
 
   vehicleBox: {
     marginBottom: "15px",
     paddingBottom: "10px",
-    borderBottom: "1px solid #eee",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
   },
 
   buttonGroup: {

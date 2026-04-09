@@ -20,7 +20,7 @@ export default function LoginPage() {
       return;
     }
 
-    if (email !== "admin@gmail.com" || password !== "admin123") {
+    if (email !== "a@gmail.com" || password !== "123") {
       setError("Invalid admin credentials");
       return;
     }
@@ -31,7 +31,7 @@ export default function LoginPage() {
   return (
     <div style={styles.container}>
       <form onSubmit={handleLogin} style={styles.form}>
-        <h2 style={styles.title}>Admin Login</h2>
+        <h2 style={styles.title}>  Login</h2>
 
         {error && <p style={styles.error}>{error}</p>}
 
@@ -75,29 +75,34 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#f4f6f8",
+    backgroundImage: "url('/background.png')",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
   },
 
   form: {
-    background: "#fff",
+    background: "rgba(255, 255, 255, 0.88)",
     padding: "30px",
-    borderRadius: "10px",
+    borderRadius: "12px",
     width: "320px",
-    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
     display: "flex",
     flexDirection: "column",
+    backdropFilter: "blur(4px)",
   },
 
   title: {
     textAlign: "center",
     marginBottom: "15px",
+    color: "#111827",
   },
 
   input: {
     padding: "10px",
     margin: "8px 0",
-    borderRadius: "5px",
+    borderRadius: "6px",
     border: "1px solid #ccc",
+    outline: "none",
   },
 
   button: {
@@ -106,8 +111,9 @@ const styles = {
     background: "#0070f3",
     color: "#fff",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "6px",
     cursor: "pointer",
+    fontWeight: "bold",
   },
 
   error: {
@@ -121,5 +127,6 @@ const styles = {
     marginTop: "15px",
     textAlign: "center",
     fontSize: "14px",
+    color: "#111827",
   },
 };

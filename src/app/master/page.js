@@ -1,31 +1,37 @@
 "use client";
 
 import Sidebar from "../../components/Sidebar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MasterData() {
   const [activeTab, setActiveTab] = useState("vehicles");
   const [search, setSearch] = useState("");
 
   // ===== Master Data States =====
-  const [vehicles, setVehicles] = useState([
-    { id: "V001", reg: "TN-01-AB-1234", customer: "C001", model: "Honda City", status: "Under Servicing" },
-    { id: "V002", reg: "TN-12-PQ-9988", customer: "C002", model: "Hyundai Creta", status: "Serviced" },
-  ]);
+  const [vehicles, setVehicles] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [serviceAdvisors, setServiceAdvisors] = useState([]);
+  const [workItems, setWorkItems] = useState([]);
 
-  const [customers, setCustomers] = useState([
-    { id: "C001", name: "John Doe", email: "john@example.com", phone: "9876543210" },
-    { id: "C002", name: "Jane Smith", email: "jane@example.com", phone: "8765432109" },
-  ]);
-
-  const [serviceAdvisors, setServiceAdvisors] = useState([
-    { id: "SA001", name: "Michael Scott", email: "michael@dundermifflin.com", phone: "9998887776" },
-  ]);
-
-  const [workItems, setWorkItems] = useState([
-    { id: "W001", name: "Engine Oil", price: 1500 },
-    { id: "W002", name: "Fuel Filter", price: 500 },
-  ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [vMsg, cMsg, saMsg, wMsg] = await Promise.all([
+          fetch("http://localhost:3001/vehicles"),
+          fetch("http://localhost:3001/customers"),
+          fetch("http://localhost:3001/serviceAdvisors"),
+          fetch("http://localhost:3001/workItems")
+        ]);
+        setVehicles(await vMsg.json());
+        setCustomers(await cMsg.json());
+        setServiceAdvisors(await saMsg.json());
+        setWorkItems(await wMsg.json());
+      } catch (error) {
+        console.error("Error fetching master data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   // ===== Form States =====
   const [showForm, setShowForm] = useState(false);
@@ -33,23 +39,51 @@ export default function MasterData() {
   const [editingId, setEditingId] = useState(null);
 
   // ===== CREATE & UPDATE =====
-  const handleAddOrUpdate = () => {
+  const handleAddOrUpdate = async () => {
+    let endpoint = "";
+    let setState = null;
+    let data = [];
+
     if (activeTab === "vehicles") {
       if (!newItem.id || !newItem.reg || !newItem.customer || !newItem.model || !newItem.status) return alert("Fill all fields");
-      if (editingId) setVehicles(prev => prev.map(v => v.id === editingId ? newItem : v));
-      else setVehicles(prev => [...prev, newItem]);
+      endpoint = "vehicles"; setState = setVehicles; data = vehicles;
     } else if (activeTab === "customers") {
       if (!newItem.id || !newItem.name || !newItem.email || !newItem.phone) return alert("Fill all fields");
-      if (editingId) setCustomers(prev => prev.map(c => c.id === editingId ? newItem : c));
-      else setCustomers(prev => [...prev, newItem]);
+      endpoint = "customers"; setState = setCustomers; data = customers;
     } else if (activeTab === "Service Advisor") {
       if (!newItem.id || !newItem.name || !newItem.email || !newItem.phone) return alert("Fill all fields");
-      if (editingId) setServiceAdvisors(prev => prev.map(sa => sa.id === editingId ? newItem : sa));
-      else setServiceAdvisors(prev => [...prev, newItem]);
+      endpoint = "serviceAdvisors"; setState = setServiceAdvisors; data = serviceAdvisors;
     } else if (activeTab === "work") {
       if (!newItem.id || !newItem.name || !newItem.price) return alert("Fill all fields");
-      if (editingId) setWorkItems(prev => prev.map(w => w.id === editingId ? newItem : w));
-      else setWorkItems(prev => [...prev, newItem]);
+      endpoint = "workItems"; setState = setWorkItems; data = workItems;
+    }
+
+    try {
+      if (editingId) {
+        const res = await fetch(`http://localhost:3001/${endpoint}/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newItem)
+        });
+        const updated = await res.json();
+        setState(prev => prev.map(item => item.id === editingId ? updated : item));
+      } else {
+        const res = await fetch(`http://localhost:3001/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...newItem,
+            billableItems: activeTab === "vehicles" ? [] : newItem.billableItems,
+            totalAmount: activeTab === "vehicles" ? 0 : newItem.totalAmount,
+            paymentStatus: activeTab === "vehicles" ? "Pending" : newItem.paymentStatus,
+            isDispatched: activeTab === "vehicles" ? false : newItem.isDispatched
+          })
+        });
+        const added = await res.json();
+        setState(prev => [...prev, added]);
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
     }
 
     setNewItem({});
@@ -58,11 +92,21 @@ export default function MasterData() {
   };
 
   // ===== DELETE =====
-  const handleDelete = (id) => {
-    if (activeTab === "vehicles") setVehicles(prev => prev.filter(v => v.id !== id));
-    else if (activeTab === "customers") setCustomers(prev => prev.filter(c => c.id !== id));
-    else if (activeTab === "Service Advisor") setServiceAdvisors(prev => prev.filter(sa => sa.id !== id));
-    else if (activeTab === "work") setWorkItems(prev => prev.filter(w => w.id !== id));
+  const handleDelete = async (id) => {
+    let endpoint = "";
+    let setState = null;
+
+    if (activeTab === "vehicles") { endpoint = "vehicles"; setState = setVehicles; }
+    else if (activeTab === "customers") { endpoint = "customers"; setState = setCustomers; }
+    else if (activeTab === "Service Advisor") { endpoint = "serviceAdvisors"; setState = setServiceAdvisors; }
+    else if (activeTab === "work") { endpoint = "workItems"; setState = setWorkItems; }
+
+    try {
+      await fetch(`http://localhost:3001/${endpoint}/${id}`, { method: "DELETE" });
+      setState(prev => prev.filter(item => item.id !== id));
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
   };
 
   // ===== EDIT =====
@@ -125,11 +169,20 @@ export default function MasterData() {
     <div style={{ display: "flex" }}>
       <Sidebar />
 
-      <div style={{ flex: 1, padding: 20, background: "#f8fafc", minHeight: "100vh" }}>
+      <div style={{
+        flex: 1,
+        padding: 20,
+        backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/master_bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        minHeight: "100vh",
+        color: "#E2E8F0"
+      }}>
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
-          <h1>Master Data</h1>
-          <div style={{ width: 32, height: 32, background: "#6366f1", color: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>A</div>
+          <h1 style={{ color: "#22D3EE" }}>Master Data</h1>
+          <div style={{ width: 32, height: 32, background: "#22D3EE", color: "#000", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold" }}>A</div>
         </div>
 
         {/* Tabs */}
@@ -140,7 +193,8 @@ export default function MasterData() {
               onClick={() => { setActiveTab(tab); setShowForm(false); setSearch(""); }}
               style={{
                 border: "none", background: "none", cursor: "pointer",
-                borderBottom: activeTab === tab ? "2px solid #6366f1" : "none",
+                borderBottom: activeTab === tab ? "2px solid #22D3EE" : "none",
+                color: activeTab === tab ? "#22D3EE" : "#94A3B8",
                 fontWeight: activeTab === tab ? "bold" : "normal", padding: 8
               }}
             >
@@ -157,15 +211,32 @@ export default function MasterData() {
 
         {/* Add/Edit Form */}
         {showForm && (
-          <div style={{ marginBottom: 20, border: "1px solid #ddd", padding: 15, borderRadius: 8 }}>
-            <h4>{editingId ? "Edit" : "Add New"} {activeTab}</h4>
+          <div style={{ 
+            marginBottom: 20, 
+            background: "rgba(255, 255, 255, 0.05)", 
+            padding: 15, 
+            borderRadius: 8, 
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(10px)"
+          }}>
+            <h4 style={{ color: "#22D3EE", marginBottom: 10 }}>{editingId ? "Edit" : "Add New"} {activeTab}</h4>
             {activeTab === "vehicles" && (
               <>
                 <input placeholder="ID" value={newItem.id || ""} onChange={e => setNewItem({ ...newItem, id: e.target.value })} style={inputStyle} />
                 <input placeholder="Reg No" value={newItem.reg || ""} onChange={e => setNewItem({ ...newItem, reg: e.target.value })} style={inputStyle} />
                 <input placeholder="Customer ID" value={newItem.customer || ""} onChange={e => setNewItem({ ...newItem, customer: e.target.value })} style={inputStyle} />
                 <input placeholder="Model" value={newItem.model || ""} onChange={e => setNewItem({ ...newItem, model: e.target.value })} style={inputStyle} />
-                <input placeholder="Status" value={newItem.status || ""} onChange={e => setNewItem({ ...newItem, status: e.target.value })} style={inputStyle} />
+                <input type="date" placeholder="Service Date" value={newItem.serviceDate || ""} onChange={e => setNewItem({ ...newItem, serviceDate: e.target.value })} style={inputStyle} />
+                <select 
+                  value={newItem.status || ""} 
+                  onChange={e => setNewItem({ ...newItem, status: e.target.value })} 
+                  style={{...inputStyle, background: "rgba(0, 0, 0, 0.5)", color: "#22D3EE", fontWeight: "bold"}}
+                >
+                  <option value="" disabled style={{background: "#000"}}>Select Status</option>
+                  <option value="Due This Week" style={{background: "#000"}}>Due This Week</option>
+                  <option value="Under Servicing" style={{background: "#000"}}>Under Servicing</option>
+                  <option value="Serviced" style={{background: "#000"}}>Serviced</option>
+                </select>
               </>
             )}
             {activeTab === "customers" && (
@@ -196,22 +267,22 @@ export default function MasterData() {
         )}
 
         {/* Render Tables */}
-        {activeTab === "vehicles" && renderTable(filteredVehicles, ["ID","Reg No","Customer","Model","Status","Actions"], v => [v.id,v.reg,v.customer,v.model,v.status])}
-        {activeTab === "customers" && renderTable(filteredCustomers, ["ID","Name","Email","Phone","Actions"], c => [c.id,c.name,c.email,c.phone])}
-        {activeTab === "Service Advisor" && renderTable(filteredSAs, ["ID","Name","Email","Phone","Actions"], sa => [sa.id,sa.name,sa.email,sa.phone])}
-        {activeTab === "work" && renderTable(filteredWorkItems, ["ID","Name","Price","Actions"], w => [w.id,w.name,w.price])}
+        {activeTab === "vehicles" && renderTable(filteredVehicles, ["ID", "Reg No", "Customer", "Model", "Status", "Actions"], v => [v.id, v.reg, v.customer, v.model, v.status])}
+        {activeTab === "customers" && renderTable(filteredCustomers, ["ID", "Name", "Email", "Phone", "Actions"], c => [c.id, c.name, c.email, c.phone])}
+        {activeTab === "Service Advisor" && renderTable(filteredSAs, ["ID", "Name", "Email", "Phone", "Actions"], sa => [sa.id, sa.name, sa.email, sa.phone])}
+        {activeTab === "work" && renderTable(filteredWorkItems, ["ID", "Name", "Price", "Actions"], w => [w.id, w.name, w.price])}
       </div>
     </div>
   );
 }
 
 // ===== Styles =====
-const inputStyle = { display: "block", width: "100%", marginBottom: 10, padding: 8, borderRadius: 5, border: "1px solid #ccc" };
-const addBtnStyle = { padding: 8, color: "#fff", border: "none", borderRadius: 5, cursor: "pointer", background: "#6366f1" };
-const searchInputStyle = { padding: 8, borderRadius: 5, border: "1px solid #ccc" };
-const tableStyle = { width: "100%", borderCollapse: "collapse", textAlign: "center" };
-const theadStyle = { background: "#f1f5f9" };
-const thStyle = { padding: 8 };
-const tdStyle = { padding: 8 };
-const editBtnStyle = { marginRight: 5, padding: 5, borderRadius: 5, background: "#07f8d0", border: "none", color: "#fff", cursor: "pointer" };
-const deleteBtnStyle = { padding: 5, borderRadius: 5, background: "#ef4444", border: "none", color: "#fff", cursor: "pointer" };
+const inputStyle = { display: "block", width: "100%", marginBottom: 10, padding: 8, borderRadius: 5, border: "1px solid rgba(255, 255, 255, 0.2)", background: "rgba(0, 0, 0, 0.3)", color: "#fff" };
+const addBtnStyle = { padding: "8px 16px", color: "#000", border: "none", borderRadius: 5, cursor: "pointer", background: "#22D3EE", fontWeight: "bold" };
+const searchInputStyle = { padding: 8, borderRadius: 5, border: "1px solid rgba(255, 255, 255, 0.2)", background: "rgba(0, 0, 0, 0.3)", color: "#fff" };
+const tableStyle = { width: "100%", borderCollapse: "collapse", textAlign: "left", background: "rgba(0, 0, 0, 0.2)", backdropFilter: "blur(5px)" };
+const theadStyle = { background: "rgba(34, 211, 238, 0.1)", color: "#22D3EE" };
+const thStyle = { padding: "12px 8px", borderBottom: "1px solid rgba(34, 211, 238, 0.3)" };
+const tdStyle = { padding: "12px 8px", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" };
+const editBtnStyle = { marginRight: 5, padding: 5, borderRadius: 5, background: "#000000", border: "none", color: "#fff", cursor: "pointer" };
+const deleteBtnStyle = { padding: 5, borderRadius: 5, background: "#cf1f1f", border: "none", color: "#ffffff", cursor: "pointer" };
