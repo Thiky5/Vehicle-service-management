@@ -226,8 +226,7 @@ export default function MasterData() {
                 <input placeholder="Reg No" value={newItem.reg || ""} onChange={e => setNewItem({ ...newItem, reg: e.target.value })} style={inputStyle} />
                 <input placeholder="Customer ID" value={newItem.customer || ""} onChange={e => setNewItem({ ...newItem, customer: e.target.value })} style={inputStyle} />
                 <input placeholder="Model" value={newItem.model || ""} onChange={e => setNewItem({ ...newItem, model: e.target.value })} style={inputStyle} />
-                <input type="date" placeholder="Service Date" value={newItem.serviceDate || ""} onChange={e => setNewItem({ ...newItem, serviceDate: e.target.value })} style={inputStyle} />
-                <select 
+                 <select 
                   value={newItem.status || ""} 
                   onChange={e => setNewItem({ ...newItem, status: e.target.value })} 
                   style={{...inputStyle, background: "rgba(0, 0, 0, 0.5)", color: "#22D3EE", fontWeight: "bold"}}
