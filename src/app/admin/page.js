@@ -54,6 +54,15 @@ export default function AdminDashboard() {
     (v) => v.status === "Due This Week"
   );
 
+  const getVehicleImage = (model) => {
+    const m = model.toLowerCase();
+    if (m.includes("575") || m.includes("tractor")) return "/vehicles/tractor.png";
+    if (m.includes("xuv")) return "/vehicles/suv.png";
+    if (m.includes("pickup") || m.includes("bolero")) return "/vehicles/pickup.png";
+    if (m.includes("leyland") || m.includes("truck")) return "/vehicles/truck.png";
+    return "/vehicles/suv.png"; // Fallback
+  };
+
   return (
     <div style={styles.layout}>
       <Sidebar />
@@ -74,8 +83,13 @@ export default function AdminDashboard() {
             ) : (
               dueThisWeek.map((v) => (
                 <div key={v.id} style={styles.vehicleBox}>
-                  <p>{v.reg}</p>
-                  <p>{v.model}</p>
+                  <div style={styles.vehicleHeader}>
+                    <img src={getVehicleImage(v.model)} alt={v.model} style={styles.thumbnail} />
+                    <div>
+                      <p style={styles.regNo}>{v.reg}</p>
+                      <p style={styles.modelName}>{v.model}</p>
+                    </div>
+                  </div>
 
                   <div style={styles.buttonGroup}>
                     <button
@@ -106,8 +120,13 @@ export default function AdminDashboard() {
             ) : (
               underServicing.map((v) => (
                 <div key={v.id} style={styles.vehicleBox}>
-                  <p>{v.reg}</p>
-                  <p>{v.model}</p>
+                    <div style={styles.vehicleHeader}>
+                    <img src={getVehicleImage(v.model)} alt={v.model} style={styles.thumbnail} />
+                    <div>
+                      <p style={styles.regNo}>{v.reg}</p>
+                      <p style={styles.modelName}>{v.model}</p>
+                    </div>
+                  </div>
 
                   <button
                     style={styles.btn}
@@ -129,8 +148,13 @@ export default function AdminDashboard() {
             ) : (
               servicedVehicles.map((v) => (
                 <div key={v.id} style={styles.vehicleBox}>
-                  <p>{v.reg}</p>
-                  <p>{v.model}</p>
+                  <div style={styles.vehicleHeader}>
+                    <img src={getVehicleImage(v.model)} alt={v.model} style={styles.thumbnail} />
+                    <div>
+                      <p style={styles.regNo}>{v.reg}</p>
+                      <p style={styles.modelName}>{v.model}</p>
+                    </div>
+                  </div>
 
                   <button
                     style={styles.btn2}
@@ -240,6 +264,35 @@ const styles = {
     marginBottom: "15px",
     paddingBottom: "10px",
     borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+  },
+
+  vehicleHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "15px",
+    marginBottom: "12px",
+  },
+
+  thumbnail: {
+    width: "60px",
+    height: "60px",
+    borderRadius: "12px",
+    objectFit: "cover",
+    background: "rgba(255, 255, 255, 0.1)",
+    border: "1px solid rgba(255, 255, 255, 0.2)",
+  },
+
+  regNo: {
+    margin: 0,
+    fontSize: "14px",
+    fontWeight: "bold",
+    color: "#fff",
+  },
+
+  modelName: {
+    margin: 0,
+    fontSize: "12px",
+    color: "#94a3b8",
   },
 
   buttonGroup: {
