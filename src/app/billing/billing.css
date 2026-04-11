@@ -70,7 +70,7 @@
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 15px;
   transition: transform 0.2s, background 0.2s;
 }
 
@@ -245,4 +245,45 @@
   cursor: pointer;
   font-weight: bold;
   box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+}
+
+/* Vehicle Images */
+.card-thumbnail {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-vehicle-preview {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+}
+
+.sidebar-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.sidebar-model {
+  margin: 0;
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff;
+}
+
+.sidebar-reg {
+  margin: 0;
+  font-size: 14px;
+  color: #94a3b8;
 }

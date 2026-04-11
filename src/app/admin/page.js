@@ -3,6 +3,7 @@
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import { apiFetch, endpoints } from "../../utils/api";
+import { getVehicleImage } from "../../utils/vehicleImages";
 
 export default function AdminDashboard() {
   const [vehicles, setVehicles] = useState([]);
@@ -53,15 +54,6 @@ export default function AdminDashboard() {
   const dueThisWeek = vehicles.filter(
     (v) => v.status === "Due This Week"
   );
-
-  const getVehicleImage = (model) => {
-    const m = model.toLowerCase();
-    if (m.includes("575") || m.includes("tractor")) return "/vehicles/tractor.png";
-    if (m.includes("xuv")) return "/vehicles/suv.png";
-    if (m.includes("pickup") || m.includes("bolero")) return "/vehicles/pickup.png";
-    if (m.includes("leyland") || m.includes("truck")) return "/vehicles/truck.png";
-    return "/vehicles/suv.png"; // Fallback
-  };
 
   return (
     <div style={styles.layout}>

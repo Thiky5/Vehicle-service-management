@@ -3,6 +3,7 @@
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
 import { apiFetch, endpoints } from "../../utils/api";
+import { getVehicleImage } from "../../utils/vehicleImages";
 import "./billing.css";
 
 export default function BillingPage() {
@@ -128,6 +129,7 @@ export default function BillingPage() {
                 <div className="billing-grid">
                   {servicedVehicles.map(v => (
                     <div key={v.id} className="vehicle-card">
+                      <img src={getVehicleImage(v.model)} alt={v.model} className="card-thumbnail" />
                       <div className="card-info">
                         <h3 className="reg-no">{v.reg}</h3>
                         <p className="model-name">{v.model}</p>
@@ -155,6 +157,14 @@ export default function BillingPage() {
                 <div className="sidebar-header">
                   <h3>Billing Details - {selectedVehicle.reg}</h3>
                   <button className="close-btn" onClick={() => setSelectedVehicle(null)}>×</button>
+                </div>
+
+                <div className="sidebar-vehicle-preview">
+                  <img src={getVehicleImage(selectedVehicle.model)} alt={selectedVehicle.model} className="sidebar-img" />
+                  <div className="sidebar-vehicle-info">
+                     <p className="sidebar-model">{selectedVehicle.model}</p>
+                     <p className="sidebar-reg">{selectedVehicle.reg}</p>
+                  </div>
                 </div>
 
                 <div style={{ marginBottom: "24px" }}>
