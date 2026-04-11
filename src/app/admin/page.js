@@ -14,6 +14,15 @@ export default function AdminDashboard() {
   }, []);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
+  const getStatusColor = (status) => {
+    switch(status) {
+      case "Serviced": return "#22c55e";
+      case "Under Servicing": return "#3b82f6";
+      case "Due This Week": return "#f59e0b";
+      default: return "#94a3b8";
+    }
+  };
+
   const markComplete = (id) => {
     apiFetch(`${endpoints.VEHICLES}/${id}`, {
       method: "PATCH",
@@ -139,28 +148,27 @@ export default function AdminDashboard() {
         {selectedVehicle && (
           <div style={styles.modalOverlay}>
             <div style={styles.modal}>
-              <h3>Vehicle Details</h3>
+              <h3 style={styles.modalHeader}>Vehicle Details</h3>
 
-              <p>
-                <strong>Reg No:</strong> {selectedVehicle.reg}
-              </p>
-
-              <p>
-                <strong>Model:</strong> {selectedVehicle.model}
-              </p>
-
-              <p>
-                <strong>Customer:</strong> {selectedVehicle.customer}
-              </p>
-
-              <p>
-                <strong>Service Date:</strong>{" "}
-                {selectedVehicle.serviceDate}
-              </p>
-
-              <p>
-                <strong>Status:</strong> {selectedVehicle.status}
-              </p>
+              <div style={styles.modalBody}>
+                <div style={styles.detailRow}>
+                  <strong>Reg No:</strong> <span>{selectedVehicle.reg}</span>
+                </div>
+                <div style={styles.detailRow}>
+                  <strong>Model:</strong> <span>{selectedVehicle.model}</span>
+                </div>
+                <div style={styles.detailRow}>
+                  <strong>Customer ID:</strong> <span>{selectedVehicle.customer}</span>
+                </div>
+                <div style={styles.detailRow}>
+                  <strong>Status:</strong> <span style={{...styles.statusBadge, background: getStatusColor(selectedVehicle.status)}}>{selectedVehicle.status}</span>
+                </div>
+                {selectedVehicle.totalAmount > 0 && (
+                   <div style={styles.detailRow}>
+                   <strong>Total Bill:</strong> <span>₹{selectedVehicle.totalAmount}</span>
+                 </div>
+                )}
+              </div>
 
               <button
                 style={styles.closeBtn}
@@ -275,27 +283,67 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: "rgba(0,0,0,0.5)",
+    background: "rgba(0, 0, 0, 0.7)",
+    backdropFilter: "blur(4px)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 1000,
   },
 
   modal: {
     background: "#fff",
-    padding: "20px",
-    borderRadius: "10px",
-    width: "300px",
+    padding: "30px",
+    borderRadius: "16px",
+    width: "350px",
+    textAlign: "left",
+    boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+    color: "#1e293b",
+  },
+
+  modalHeader: {
+    marginTop: 0,
+    marginBottom: "20px",
+    fontSize: "24px",
+    fontWeight: "bold",
+    color: "#22D3EE",
     textAlign: "center",
   },
 
+  modalBody: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+    marginBottom: "25px",
+  },
+
+  detailRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: "16px",
+    paddingBottom: "8px",
+    borderBottom: "1px solid #f1f5f9",
+  },
+
+  statusBadge: {
+    padding: "4px 10px",
+    borderRadius: "20px",
+    color: "#fff",
+    fontSize: "12px",
+    fontWeight: "bold",
+  },
+
   closeBtn: {
-    marginTop: "10px",
-    padding: "8px 12px",
+    width: "100%",
+    padding: "12px",
     background: "#ef4444",
     color: "#fff",
     border: "none",
-    borderRadius: "5px",
+    borderRadius: "8px",
     cursor: "pointer",
+    fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background 0.2s",
   },
 };

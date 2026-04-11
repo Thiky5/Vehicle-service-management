@@ -105,5 +105,21 @@
       "name": "Body Painting",
       "price": 5000
     }
+  ],
+  "users": [
+    {
+      "id": "U001",
+      "name": "Admin",
+      "email": "a@gmail.com",
+      "password": "123",
+      "role": "admin"
+    },
+    {
+      "name": "Persian",
+      "email": "persian@gmail.com",
+      "password": "123",
+      "role": "admin",
+      "id": "U1775885326721"
+    }
   ]
 }

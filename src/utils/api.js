@@ -30,4 +30,5 @@ export const endpoints = {
   CUSTOMERS: "customers",
   SERVICE_ADVISORS: "serviceAdvisors",
   WORK_ITEMS: "workItems",
+  USERS: "users",
 };

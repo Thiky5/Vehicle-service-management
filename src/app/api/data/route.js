@@ -12,10 +12,10 @@ const BIN_ID = process.env.JSONBIN_BIN_ID;
 async function getLocalServerData(collection, id) {
   try {
     const url = id ? `${LOCAL_SERVER_URL}/${collection}/${id}` : `${LOCAL_SERVER_URL}/${collection}`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(500) }); // Quick check
+    const res = await fetch(url, { signal: AbortSignal.timeout(500) }); 
     if (res.ok) return await res.json();
   } catch (err) {
-    return null; // Local server is probably down
+    return null;
   }
   return null;
 }
@@ -28,7 +28,7 @@ async function getFullData() {
       const fileData = fs.readFileSync(filePath, "utf8");
       return JSON.parse(fileData);
     } catch (err) {
-      return { vehicles: [], customers: [], serviceAdvisors: [], workItems: [] };
+      return { vehicles: [], customers: [], serviceAdvisors: [], workItems: [], users: [] };
     }
   }
 
@@ -40,9 +40,19 @@ async function getFullData() {
   return res.json();
 }
 
-// Helper to save data (only if JSONBin is configured)
+// Helper to save data (with local file fallback)
 async function saveFullData(data) {
-  if (!API_KEY || !BIN_ID) return data;
+  if (!API_KEY || !BIN_ID) {
+    // LOCAL PERSISTENCE FALLBACK
+    try {
+      const filePath = path.join(process.cwd(), "db.json");
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2), "utf8");
+      return data;
+    } catch (err) {
+      console.error("Local file write error:", err);
+      return data;
+    }
+  }
 
   const res = await fetch(`${JSONBIN_URL}/${BIN_ID}`, {
     method: "PUT",
@@ -61,13 +71,11 @@ export async function GET(request) {
   const collection = searchParams.get("collection");
   const id = searchParams.get("id");
 
-  // 1. Try local server first (silent)
   if (collection) {
     const localData = await getLocalServerData(collection, id);
     if (localData) return NextResponse.json(localData);
   }
 
-  // 2. Fallback to File/Online
   try {
     const data = await getFullData();
     if (collection) {
@@ -86,10 +94,14 @@ export async function GET(request) {
 
 export async function POST(request) {
   const { searchParams } = new URL(request.url);
-  const collection = searchParams.get("collection");
+  const collection = searchParams.get("collection") || (new URL(request.url)).pathname.split('/').pop();
   const body = await request.json();
 
-  // Try local server first
+  if (!collection || collection === 'data') {
+      // Fallback for body parsing if collection not in query
+      return NextResponse.json({ message: "Collection required" }, { status: 400 });
+  }
+
   try {
     const res = await fetch(`${LOCAL_SERVER_URL}/${collection}`, {
       method: "POST",
@@ -98,7 +110,7 @@ export async function POST(request) {
       signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json(await res.json());
-  } catch (err) { /* Silent fail to fallback */ }
+  } catch (err) { }
 
   try {
     const data = await getFullData();
@@ -118,7 +130,6 @@ export async function PATCH(request) {
   const id = searchParams.get("id");
   const body = await request.json();
 
-  // Try local server first
   try {
     const res = await fetch(`${LOCAL_SERVER_URL}/${collection}/${id}`, {
       method: "PATCH",
@@ -127,7 +138,7 @@ export async function PATCH(request) {
       signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json(await res.json());
-  } catch (err) { /* Silent fail to fallback */ }
+  } catch (err) { }
 
   try {
     const data = await getFullData();
@@ -148,14 +159,13 @@ export async function DELETE(request) {
   const collection = searchParams.get("collection");
   const id = searchParams.get("id");
 
-  // Try local server first
   try {
     const res = await fetch(`${LOCAL_SERVER_URL}/${collection}/${id}`, {
       method: "DELETE",
       signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json({ message: "Deleted" });
-  } catch (err) { /* Silent fail to fallback */ }
+  } catch (err) { }
 
   try {
     const data = await getFullData();
@@ -174,7 +184,6 @@ export async function PUT(request) {
   const id = searchParams.get("id");
   const body = await request.json();
 
-  // Try local server first
   try {
     const res = await fetch(`${LOCAL_SERVER_URL}/${collection}/${id}`, {
       method: "PUT",
@@ -183,7 +192,7 @@ export async function PUT(request) {
       signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json(await res.json());
-  } catch (err) { /* Silent fail to fallback */ }
+  } catch (err) { }
 
   try {
     const data = await getFullData();
