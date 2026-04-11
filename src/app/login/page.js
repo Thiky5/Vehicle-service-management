@@ -34,7 +34,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Store basic user data in session (optional but helpful)
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(user));
       }
@@ -50,48 +49,38 @@ export default function LoginPage() {
 
   return (
     <div style={styles.container}>
-      <div style={styles.overlay} />
       <form onSubmit={handleLogin} style={styles.form}>
-        <div style={styles.logoContainer}>
-            <div style={styles.logo}>V</div>
-            <h2 style={styles.title}>Welcome Back</h2>
-        </div>
-        
-        <p style={styles.subtitle}>Enter your credentials to access the dashboard</p>
+        <h2 style={styles.title}>Login</h2>
 
-        {error && <div style={styles.errorBox}>{error}</div>}
+        {error && <p style={styles.error}>{error}</p>}
 
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Admin Email</label>
-          <input
-            type="email"
-            placeholder="admin@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={styles.input}
-            required
-          />
-        </div>
+        <input
+          type="email"
+          placeholder="Enter Admin Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={styles.input}
+          required
+        />
 
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Password</label>
-          <input
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-            required
-          />
-        </div>
+        <input
+          type="password"
+          placeholder="Enter Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={styles.input}
+          required
+        />
 
         <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? "Authenticating..." : "Login to System"}
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p style={styles.signup}>
-          New to the platform?{" "}
-          <Link href="/signup" style={styles.link}> Create Account</Link>
+          Don't have an account?{" "}
+          <Link href="/signup" style={styles.link}>
+            Sign Up
+          </Link>
         </p>
       </form>
     </div>
@@ -104,116 +93,68 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    position: "relative",
     backgroundImage: "url('/background.png')",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    fontFamily: "'Inter', sans-serif",
   },
-  overlay: {
-    position: "absolute",
-    top: 0, left: 0, right: 0, bottom: 0,
-    background: "rgba(15, 23, 42, 0.7)", 
-    backdropFilter: "blur(10px)",
-  },
+
   form: {
-    position: "relative",
-    background: "rgba(255, 255, 255, 0.03)",
-    padding: "40px",
-    borderRadius: "28px",
-    width: "420px",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.6)",
-    backdropFilter: "blur(20px)",
-    color: "#fff",
-  },
-  logoContainer: {
-    textAlign: "center",
-    marginBottom: "24px",
-  },
-  logo: {
-    width: "48px",
-    height: "48px",
-    background: "linear-gradient(135deg, #22D3EE, #818CF8)",
+    background: "rgba(255, 255, 255, 0.9)",
+    padding: "30px",
     borderRadius: "12px",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "24px",
-    fontWeight: "900",
-    color: "#fff",
-    marginBottom: "16px",
-    boxShadow: "0 0 20px rgba(34, 211, 238, 0.4)",
+    width: "320px",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.25)",
+    display: "flex",
+    flexDirection: "column",
+    backdropFilter: "blur(4px)",
   },
+
   title: {
-    fontSize: "28px",
-    fontWeight: "800",
-    background: "linear-gradient(to bottom, #fff, #94A3B8)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-  subtitle: {
-    fontSize: "14px",
-    color: "#94A3B8",
-    marginBottom: "32px",
     textAlign: "center",
-  },
-  errorBox: {
-    background: "rgba(239, 68, 68, 0.1)",
-    border: "1px solid rgba(239, 68, 68, 0.2)",
-    color: "#FCA5A5",
-    padding: "12px",
-    borderRadius: "12px",
-    fontSize: "14px",
-    marginBottom: "20px",
-    textAlign: "center",
-  },
-  inputGroup: {
-    marginBottom: "20px",
-  },
-  label: {
-    display: "block",
-    fontSize: "12px",
+    marginBottom: "15px",
+    color: "#111827",
+    fontSize: "24px",
     fontWeight: "bold",
-    textTransform: "uppercase",
-    color: "#22D3EE",
-    marginBottom: "8px",
-    letterSpacing: "0.05em",
   },
+
   input: {
-    width: "100%",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    background: "rgba(0, 0, 0, 0.4)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    color: "#fff",
-    fontSize: "16px",
+    padding: "12px",
+    margin: "8px 0",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
     outline: "none",
-    transition: "all 0.3s",
+    fontSize: "14px",
   },
+
   button: {
-    width: "100%",
-    padding: "16px",
     marginTop: "10px",
-    background: "linear-gradient(to right, #0891B2, #4F46E5)",
+    padding: "12px",
+    background: "#0070f3",
     color: "#fff",
     border: "none",
-    borderRadius: "14px",
-    fontSize: "16px",
-    fontWeight: "bold",
+    borderRadius: "8px",
     cursor: "pointer",
-    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
-    transition: "all 0.2s",
+    fontWeight: "bold",
+    fontSize: "16px",
   },
+
+  error: {
+    color: "#ef4444",
+    fontSize: "14px",
+    marginBottom: "10px",
+    textAlign: "center",
+  },
+
   signup: {
-    marginTop: "24px",
+    marginTop: "15px",
     textAlign: "center",
     fontSize: "14px",
-    color: "#94A3B8",
+    color: "#111827",
   },
+
   link: {
-    color: "#22D3EE",
-    textDecoration: "none",
+    color: "#0070f3",
+    textDecoration: "underline",
     fontWeight: "bold",
-  }
+  },
 };

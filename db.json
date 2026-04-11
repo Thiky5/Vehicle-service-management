@@ -120,6 +120,13 @@
       "password": "123",
       "role": "admin",
       "id": "U1775885326721"
+    },
+    {
+      "name": "diheesh",
+      "email": "diheesh@gmail.com",
+      "password": "1234",
+      "role": "admin",
+      "id": "U1775887234913"
     }
   ]
 }
