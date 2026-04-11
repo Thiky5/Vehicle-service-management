@@ -2,6 +2,7 @@
 
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
+import { apiFetch, endpoints } from "../../utils/api";
 
 export default function MasterData() {
   const [activeTab, setActiveTab] = useState("vehicles");
@@ -16,16 +17,16 @@ export default function MasterData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [vMsg, cMsg, saMsg, wMsg] = await Promise.all([
-          fetch("http://localhost:3001/vehicles"),
-          fetch("http://localhost:3001/customers"),
-          fetch("http://localhost:3001/serviceAdvisors"),
-          fetch("http://localhost:3001/workItems")
+        const [vData, cData, saData, wData] = await Promise.all([
+          apiFetch(endpoints.VEHICLES),
+          apiFetch(endpoints.CUSTOMERS),
+          apiFetch(endpoints.SERVICE_ADVISORS),
+          apiFetch(endpoints.WORK_ITEMS)
         ]);
-        setVehicles(await vMsg.json());
-        setCustomers(await cMsg.json());
-        setServiceAdvisors(await saMsg.json());
-        setWorkItems(await wMsg.json());
+        setVehicles(vData);
+        setCustomers(cData);
+        setServiceAdvisors(saData);
+        setWorkItems(wData);
       } catch (error) {
         console.error("Error fetching master data:", error);
       }
@@ -42,35 +43,31 @@ export default function MasterData() {
   const handleAddOrUpdate = async () => {
     let endpoint = "";
     let setState = null;
-    let data = [];
 
     if (activeTab === "vehicles") {
       if (!newItem.id || !newItem.reg || !newItem.customer || !newItem.model || !newItem.status) return alert("Fill all fields");
-      endpoint = "vehicles"; setState = setVehicles; data = vehicles;
+      endpoint = "vehicles"; setState = setVehicles;
     } else if (activeTab === "customers") {
       if (!newItem.id || !newItem.name || !newItem.email || !newItem.phone) return alert("Fill all fields");
-      endpoint = "customers"; setState = setCustomers; data = customers;
+      endpoint = "customers"; setState = setCustomers;
     } else if (activeTab === "Service Advisor") {
       if (!newItem.id || !newItem.name || !newItem.email || !newItem.phone) return alert("Fill all fields");
-      endpoint = "serviceAdvisors"; setState = setServiceAdvisors; data = serviceAdvisors;
+      endpoint = "serviceAdvisors"; setState = setServiceAdvisors;
     } else if (activeTab === "work") {
       if (!newItem.id || !newItem.name || !newItem.price) return alert("Fill all fields");
-      endpoint = "workItems"; setState = setWorkItems; data = workItems;
+      endpoint = "workItems"; setState = setWorkItems;
     }
 
     try {
       if (editingId) {
-        const res = await fetch(`http://localhost:3001/${endpoint}/${editingId}`, {
+        const updated = await apiFetch(`${endpoint}/${editingId}`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(newItem)
         });
-        const updated = await res.json();
         setState(prev => prev.map(item => item.id === editingId ? updated : item));
       } else {
-        const res = await fetch(`http://localhost:3001/${endpoint}`, {
+        const added = await apiFetch(endpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...newItem,
             billableItems: activeTab === "vehicles" ? [] : newItem.billableItems,
@@ -79,7 +76,6 @@ export default function MasterData() {
             isDispatched: activeTab === "vehicles" ? false : newItem.isDispatched
           })
         });
-        const added = await res.json();
         setState(prev => [...prev, added]);
       }
     } catch (error) {
@@ -102,7 +98,7 @@ export default function MasterData() {
     else if (activeTab === "work") { endpoint = "workItems"; setState = setWorkItems; }
 
     try {
-      await fetch(`http://localhost:3001/${endpoint}/${id}`, { method: "DELETE" });
+      await apiFetch(`${endpoint}/${id}`, { method: "DELETE" });
       setState(prev => prev.filter(item => item.id !== id));
     } catch (error) {
       console.error("Error deleting data:", error);
@@ -118,30 +114,30 @@ export default function MasterData() {
 
   // ===== SEARCH FILTER =====
   const filteredVehicles = vehicles.filter(v =>
-    v.id.toLowerCase().includes(search.toLowerCase()) ||
-    v.reg.toLowerCase().includes(search.toLowerCase()) ||
-    v.customer.toLowerCase().includes(search.toLowerCase()) ||
-    v.model.toLowerCase().includes(search.toLowerCase()) ||
-    v.status.toLowerCase().includes(search.toLowerCase())
+    (v.id?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (v.reg?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (v.customer?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (v.model?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (v.status?.toLowerCase() || "").includes(search.toLowerCase())
   );
 
   const filteredCustomers = customers.filter(c =>
-    c.id.toLowerCase().includes(search.toLowerCase()) ||
-    c.name.toLowerCase().includes(search.toLowerCase()) ||
-    c.email.toLowerCase().includes(search.toLowerCase()) ||
-    c.phone.toLowerCase().includes(search.toLowerCase())
+    (c.id?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (c.name?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (c.email?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (c.phone?.toLowerCase() || "").includes(search.toLowerCase())
   );
 
   const filteredSAs = serviceAdvisors.filter(sa =>
-    sa.id.toLowerCase().includes(search.toLowerCase()) ||
-    sa.name.toLowerCase().includes(search.toLowerCase()) ||
-    sa.email.toLowerCase().includes(search.toLowerCase()) ||
-    sa.phone.toLowerCase().includes(search.toLowerCase())
+    (sa.id?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (sa.name?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (sa.email?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (sa.phone?.toLowerCase() || "").includes(search.toLowerCase())
   );
 
   const filteredWorkItems = workItems.filter(w =>
-    w.id.toLowerCase().includes(search.toLowerCase()) ||
-    w.name.toLowerCase().includes(search.toLowerCase()) ||
+    (w.id?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (w.name?.toLowerCase() || "").includes(search.toLowerCase()) ||
     (w.price + "").includes(search)
   );
 

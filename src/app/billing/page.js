@@ -2,6 +2,8 @@
 
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
+import { apiFetch, endpoints } from "../../utils/api";
+import "./billing.css";
 
 export default function BillingPage() {
   const [vehicles, setVehicles] = useState([]);
@@ -14,14 +16,11 @@ export default function BillingPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [vMsg, wMsg, cMsg] = await Promise.all([
-          fetch("http://localhost:3001/vehicles"),
-          fetch("http://localhost:3001/workItems"),
-          fetch("http://localhost:3001/customers"),
+        const [vData, wData, cData] = await Promise.all([
+          apiFetch(endpoints.VEHICLES),
+          apiFetch(endpoints.WORK_ITEMS),
+          apiFetch(endpoints.CUSTOMERS),
         ]);
-        const vData = await vMsg.json();
-        const wData = await wMsg.json();
-        const cData = await cMsg.json();
         
         setVehicles(vData);
         setWorkItems(wData);
@@ -52,23 +51,15 @@ export default function BillingPage() {
   const handleGenerateInvoice = async () => {
     if (!selectedVehicle) return;
     const total = calculateTotal();
-    
-    const updatedVehicle = {
-      ...selectedVehicle,
-      billableItems: selectedWorkItems,
-      totalAmount: total,
-    };
 
     try {
-      const res = await fetch(`http://localhost:3001/vehicles/${selectedVehicle.id}`, {
+      const data = await apiFetch(`${endpoints.VEHICLES}/${selectedVehicle.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           billableItems: selectedWorkItems,
           totalAmount: total,
         }),
       });
-      const data = await res.json();
       setVehicles(prev => prev.map(v => v.id === data.id ? data : v));
       setSelectedVehicle(data);
       alert("Invoice Generated Successfully!");
@@ -81,12 +72,10 @@ export default function BillingPage() {
     if (!selectedVehicle) return;
 
     try {
-      const res = await fetch(`http://localhost:3001/vehicles/${selectedVehicle.id}`, {
+      const data = await apiFetch(`${endpoints.VEHICLES}/${selectedVehicle.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentStatus: "Paid" }),
       });
-      const data = await res.json();
       setVehicles(prev => prev.map(v => v.id === data.id ? data : v));
       setSelectedVehicle(data);
       alert("Payment Processed Successfully!");
@@ -103,12 +92,10 @@ export default function BillingPage() {
     }
 
     try {
-      const res = await fetch(`http://localhost:3001/vehicles/${selectedVehicle.id}`, {
+      const data = await apiFetch(`${endpoints.VEHICLES}/${selectedVehicle.id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isDispatched: true, status: "Dispatched" }),
       });
-      const data = await res.json();
       setVehicles(prev => prev.filter(v => v.id !== data.id));
       setSelectedVehicle(null);
       setSelectedWorkItems([]);
@@ -124,30 +111,30 @@ export default function BillingPage() {
   };
 
   return (
-    <div style={styles.layout}>
+    <div className="billing-container">
       <Sidebar />
 
-      <div style={styles.main}>
-        <div style={styles.topbar}>
-          <h1 style={styles.title}>Billing & Dispatch</h1>
-          <div style={styles.user}>Admin</div>
+      <div className="billing-main">
+        <div className="billing-topbar">
+          <h1 className="billing-title">Billing & Dispatch</h1>
+          <div className="billing-user">Admin</div>
         </div>
 
-        <div style={styles.content}>
-          <div style={styles.listSection}>
-            <h2 style={styles.sectionHeader}>Vehicles Ready for Billing</h2>
+        <div className="billing-content">
+          <div className="list-section">
+            <h2 className="section-header">Vehicles Ready for Billing</h2>
             {loading ? <p>Loading...</p> : (
               servicedVehicles.length === 0 ? <p>No serviced vehicles pending billing.</p> : (
-                <div style={styles.grid}>
+                <div className="billing-grid">
                   {servicedVehicles.map(v => (
-                    <div key={v.id} style={styles.card}>
-                      <div style={styles.cardInfo}>
-                        <h3 style={styles.reg}>{v.reg}</h3>
-                        <p style={styles.model}>{v.model}</p>
-                        <p style={styles.customer}>Owner: {getCustomerName(v.customer)}</p>
+                    <div key={v.id} className="vehicle-card">
+                      <div className="card-info">
+                        <h3 className="reg-no">{v.reg}</h3>
+                        <p className="model-name">{v.model}</p>
+                        <p className="owner-name">Owner: {getCustomerName(v.customer)}</p>
                       </div>
                       <button 
-                        style={styles.reviewBtn}
+                        className="review-btn"
                         onClick={() => {
                           setSelectedVehicle(v);
                           setSelectedWorkItems(v.billableItems || []);
@@ -163,18 +150,18 @@ export default function BillingPage() {
           </div>
 
           {selectedVehicle && (
-            <div style={styles.billingSide}>
-              <div style={styles.billingCard}>
-                <div style={styles.billingHeader}>
+            <div className="billing-side">
+              <div className="sidebar-card">
+                <div className="sidebar-header">
                   <h3>Billing Details - {selectedVehicle.reg}</h3>
-                  <button style={styles.closeBtn} onClick={() => setSelectedVehicle(null)}>×</button>
+                  <button className="close-btn" onClick={() => setSelectedVehicle(null)}>×</button>
                 </div>
 
-                <div style={styles.workItemsSelection}>
+                <div style={{ marginBottom: "24px" }}>
                   <h4>Select Work Items</h4>
-                  <div style={styles.workList}>
+                  <div style={{ maxHeight: "300px", overflowY: "auto", paddingRight: "10px" }}>
                     {workItems.map(item => (
-                      <label key={item.id} style={styles.workItemLabel}>
+                      <label key={item.id} className="workItem-label">
                         <input 
                           type="checkbox" 
                           checked={selectedWorkItems.some(i => i.id === item.id)}
@@ -182,29 +169,29 @@ export default function BillingPage() {
                           disabled={selectedVehicle.paymentStatus === "Paid"}
                         />
                         <span>{item.name}</span>
-                        <span style={styles.price}>₹{item.price}</span>
+                        <span className="price-tag">₹{item.price}</span>
                       </label>
                     ))}
                   </div>
                 </div>
 
-                <div style={styles.invoiceSummary}>
-                  <div style={styles.summaryRow}>
+                <div className="invoice-summary">
+                  <div className="summary-row">
                     <span>Subtotal:</span>
                     <span>₹{calculateTotal()}</span>
                   </div>
-                  <div style={{...styles.summaryRow, fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "10px", marginTop: "10px"}}>
+                  <div className="summary-row summary-total">
                     <span>Grand Total:</span>
                     <span>₹{calculateTotal()}</span>
                   </div>
                 </div>
 
-                <div style={styles.actions}>
+                <div className="action-buttons">
                   {selectedVehicle.paymentStatus !== "Paid" ? (
                     <>
-                      <button style={styles.primaryBtn} onClick={handleGenerateInvoice}>Update Invoice</button>
+                      <button className="update-invoice-btn" onClick={handleGenerateInvoice}>Update Invoice</button>
                       <button 
-                        style={styles.payBtn} 
+                        className="process-payment-btn" 
                         onClick={handleProcessPayment}
                         disabled={calculateTotal() === 0}
                       >
@@ -212,9 +199,9 @@ export default function BillingPage() {
                       </button>
                     </>
                   ) : (
-                    <div style={styles.paidStatus}>
-                      <span style={styles.paidBadge}>PAID</span>
-                      <button style={styles.dispatchBtn} onClick={handleDispatch}>Dispatch Vehicle</button>
+                    <div className="paid-status-container">
+                      <span className="paid-label">PAID</span>
+                      <button className="dispatch-vehicle-btn" onClick={handleDispatch}>Dispatch Vehicle</button>
                     </div>
                   )}
                 </div>
@@ -226,224 +213,3 @@ export default function BillingPage() {
     </div>
   );
 }
-
-const styles = {
-  layout: {
-    display: "flex",
-    minHeight: "100vh",
-    backgroundColor: "#0f172a",
-    color: "#f8fafc",
-    fontFamily: "'Inter', sans-serif",
-  },
-  main: {
-    flex: 1,
-    padding: "40px",
-    background: "linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%), url('/billing_bg.png')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundAttachment: "fixed",
-    overflowY: "auto",
-  },
-  topbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "40px",
-  },
-  title: {
-    fontSize: "32px",
-    fontWeight: "800",
-    background: "linear-gradient(to right, #22d3ee, #818cf8)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-  },
-  user: {
-    background: "rgba(99, 102, 241, 0.2)",
-    color: "#818cf8",
-    padding: "8px 16px",
-    borderRadius: "30px",
-    fontSize: "14px",
-    fontWeight: "600",
-    border: "1px solid rgba(99, 102, 241, 0.3)",
-  },
-  content: {
-    display: "flex",
-    gap: "30px",
-  },
-  listSection: {
-    flex: 2,
-  },
-  sectionHeader: {
-    fontSize: "20px",
-    marginBottom: "20px",
-    color: "#94a3b8",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "20px",
-  },
-  card: {
-    background: "rgba(255, 255, 255, 0.03)",
-    backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255, 255, 255, 0.05)",
-    padding: "24px",
-    borderRadius: "16px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    transition: "transform 0.2s, background 0.2s",
-    ":hover": {
-      transform: "translateY(-4px)",
-      background: "rgba(255, 255, 255, 0.05)",
-    }
-  },
-  cardInfo: {
-    marginBottom: "20px",
-  },
-  reg: {
-    fontSize: "22px",
-    fontWeight: "bold",
-    margin: "0 0 4px 0",
-    color: "#22d3ee",
-  },
-  model: {
-    fontSize: "16px",
-    margin: "0 0 8px 0",
-    color: "#f1f5f9",
-  },
-  customer: {
-    fontSize: "14px",
-    color: "#94a3b8",
-  },
-  reviewBtn: {
-    padding: "12px",
-    background: "rgba(59, 130, 246, 0.1)",
-    color: "#60a5fa",
-    border: "1px solid rgba(59, 130, 246, 0.2)",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontWeight: "600",
-    transition: "all 0.2s",
-    ":hover": {
-      background: "#3b82f6",
-      color: "white",
-    }
-  },
-  billingSide: {
-    flex: 1.2,
-  },
-  billingCard: {
-    background: "rgba(255, 255, 255, 0.04)",
-    backdropFilter: "blur(40px)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: "24px",
-    padding: "30px",
-    position: "sticky",
-    top: "20px",
-    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-  },
-  billingHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "24px",
-    borderBottom: "1px solid rgba(255,255,255,0.1)",
-    paddingBottom: "15px",
-  },
-  closeBtn: {
-    background: "none",
-    border: "none",
-    color: "#94a3b8",
-    fontSize: "24px",
-    cursor: "pointer",
-  },
-  workItemsSelection: {
-    marginBottom: "24px",
-  },
-  workList: {
-    maxHeight: "300px",
-    overflowY: "auto",
-    paddingRight: "10px",
-  },
-  workItemLabel: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    padding: "12px",
-    borderRadius: "10px",
-    marginBottom: "8px",
-    background: "rgba(255,255,255,0.02)",
-    cursor: "pointer",
-    transition: "background 0.2s",
-    ":hover": {
-      background: "rgba(255,255,255,0.05)",
-    }
-  },
-  price: {
-    marginLeft: "auto",
-    color: "#22d3ee",
-    fontWeight: "600",
-  },
-  invoiceSummary: {
-    background: "rgba(0,0,0,0.2)",
-    padding: "20px",
-    borderRadius: "16px",
-    marginBottom: "24px",
-  },
-  summaryRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: "8px",
-    color: "#cbd5e1",
-  },
-  actions: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-  primaryBtn: {
-    padding: "14px",
-    background: "#334155",
-    color: "white",
-    border: "none",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
-  payBtn: {
-    padding: "14px",
-    background: "linear-gradient(to right, #22c55e, #10b981)",
-    color: "white",
-    border: "none",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    boxShadow: "0 10px 15px -3px rgba(34, 197, 94, 0.3)",
-  },
-  paidStatus: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-    alignItems: "center",
-  },
-  paidBadge: {
-    background: "rgba(34, 197, 94, 0.2)",
-    color: "#4ade80",
-    padding: "8px 20px",
-    borderRadius: "20px",
-    fontWeight: "bold",
-    border: "1px solid rgba(34, 197, 94, 0.3)",
-  },
-  dispatchBtn: {
-    width: "100%",
-    padding: "14px",
-    background: "linear-gradient(to right, #f59e0b, #ea580c)",
-    color: "white",
-    border: "none",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontWeight: "bold",
-    boxShadow: "0 10px 15px -3px rgba(245, 158, 11, 0.3)",
-  }
-};

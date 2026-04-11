@@ -1,0 +1,248 @@
+.billing-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+}
+
+.billing-main {
+  flex: 1;
+  padding: 40px;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%), url('/billing_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  overflow-y: auto;
+}
+
+.billing-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.billing-title {
+  font-size: 32px;
+  font-weight: 800;
+  background: linear-gradient(to right, #22d3ee, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.billing-user {
+  background: rgba(99, 102, 241, 0.2);
+  color: #818cf8;
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.billing-content {
+  display: flex;
+  gap: 30px;
+}
+
+.list-section {
+  flex: 2;
+}
+
+.section-header {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #94a3b8;
+}
+
+.billing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.vehicle-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.vehicle-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.card-info {
+  margin-bottom: 20px;
+}
+
+.reg-no {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+  color: #22d3ee;
+}
+
+.model-name {
+  font-size: 16px;
+  margin: 0 0 8px 0;
+  color: #f1f5f9;
+}
+
+.owner-name {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.review-btn {
+  padding: 12px;
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.review-btn:hover {
+  background: #3b82f6;
+  color: white;
+}
+
+.billing-side {
+  flex: 1.2;
+}
+
+.sidebar-card {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(40px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 30px;
+  position: sticky;
+  top: 20px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 15px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.workItem-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: rgba(255,255,255,0.02);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.workItem-label:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.price-tag {
+  margin-left: auto;
+  color: #22d3ee;
+  font-weight: 600;
+}
+
+.invoice-summary {
+  background: rgba(0,0,0,0.2);
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #cbd5e1;
+}
+
+.summary-total {
+  font-weight: bold;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.update-invoice-btn {
+  padding: 14px;
+  background: #334155;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.process-payment-btn {
+  padding: 14px;
+  background: linear-gradient(to right, #22c55e, #10b981);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.3);
+}
+
+.paid-status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.paid-label {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: bold;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.dispatch-vehicle-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(to right, #f59e0b, #ea580c);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+}

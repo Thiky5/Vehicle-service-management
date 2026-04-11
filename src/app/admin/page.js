@@ -2,37 +2,33 @@
 
 import Sidebar from "../../components/Sidebar";
 import { useState, useEffect } from "react";
+import { apiFetch, endpoints } from "../../utils/api";
 
 export default function AdminDashboard() {
   const [vehicles, setVehicles] = useState([]);
   
   useEffect(() => {
-    fetch("http://localhost:3001/vehicles")
-      .then(res => res.json())
+    apiFetch(endpoints.VEHICLES)
       .then(data => setVehicles(data))
       .catch(err => console.error("Error fetching vehicles:", err));
   }, []);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
   const markComplete = (id) => {
-    fetch(`http://localhost:3001/vehicles/${id}`, {
+    apiFetch(`${endpoints.VEHICLES}/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "Serviced" })
     })
-    .then(res => res.json())
     .then(updatedVehicle => {
       setVehicles((prev) => prev.map((v) => v.id === id ? updatedVehicle : v));
     });
   };
 
   const assignToSA = (id) => {
-    fetch(`http://localhost:3001/vehicles/${id}`, {
+    apiFetch(`${endpoints.VEHICLES}/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: "Under Servicing" })
     })
-    .then(res => res.json())
     .then(updatedVehicle => {
       setVehicles((prev) => prev.map((v) => v.id === id ? updatedVehicle : v));
       alert("Vehicle assigned to Service Advisor");
