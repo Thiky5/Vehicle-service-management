@@ -6,10 +6,12 @@
       "customer": "C045",
       "model": "Mahindra 575",
       "status": "Due This Week",
+      "assignedSA": null,
       "billableItems": [],
       "totalAmount": 0,
       "paymentStatus": "Pending",
-      "isDispatched": false
+      "isDispatched": false,
+      "serviceCompletedAt": null
     },
     {
       "id": "V002",
@@ -17,10 +19,12 @@
       "customer": "C048",
       "model": "Mahindra XUV",
       "status": "Due This Week",
+      "assignedSA": null,
       "billableItems": [],
       "totalAmount": 0,
       "paymentStatus": "Pending",
-      "isDispatched": false
+      "isDispatched": false,
+      "serviceCompletedAt": null
     },
     {
       "id": "V003",
@@ -28,10 +32,12 @@
       "customer": "C001",
       "model": "Mahindra pickup",
       "status": "Under Servicing",
+      "assignedSA": "SA001",
       "billableItems": [],
       "totalAmount": 0,
       "paymentStatus": "Pending",
-      "isDispatched": false
+      "isDispatched": false,
+      "serviceCompletedAt": null
     },
     {
       "id": "V004",
@@ -39,16 +45,36 @@
       "customer": "C090",
       "model": "Ashok leyland",
       "status": "Serviced",
+      "assignedSA": "SA002",
       "billableItems": [
         {
           "id": "W001",
           "name": "Engine Oil",
-          "price": 1500
+          "price": 1500,
+          "quantity": 1
         }
       ],
       "totalAmount": 1500,
       "paymentStatus": "Pending",
-      "isDispatched": false
+      "isDispatched": false,
+      "serviceCompletedAt": "2026-04-12T10:30:00Z"
+    },
+    {
+      "id": "V005",
+      "reg": "TN-52-AB-1258",
+      "customer": "C001",
+      "model": "Mahindra 575",
+      "status": "Dispatched",
+      "assignedSA": "SA001",
+      "billableItems": [
+        { "id": "W001", "name": "Engine Oil", "price": 1500, "quantity": 2 },
+        { "id": "W002", "name": "Fuel Filter", "price": 500, "quantity": 1 },
+        { "id": "W006", "name": "Wheel Alignment", "price": 800, "quantity": 1 }
+      ],
+      "totalAmount": 4300,
+      "paymentStatus": "Paid",
+      "isDispatched": true,
+      "serviceCompletedAt": "2026-04-10T09:15:00Z"
     }
   ],
   "customers": [
@@ -61,15 +87,33 @@
     {
       "id": "C002",
       "name": "Dharvin",
-      "email": "dharvin141@gmail.com.com",
+      "email": "dharvin141@gmail.com",
       "phone": "8765432109"
+    },
+    {
+      "id": "C045",
+      "name": "Rajan",
+      "email": "rajan@gmail.com",
+      "phone": "9123456780"
+    },
+    {
+      "id": "C048",
+      "name": "Suresh",
+      "email": "suresh@gmail.com",
+      "phone": "9988776655"
+    },
+    {
+      "id": "C090",
+      "name": "Murugan",
+      "email": "murugan@gmail.com",
+      "phone": "9871234560"
     }
   ],
   "serviceAdvisors": [
     {
       "id": "SA001",
       "name": "Ganesh",
-      "email": "Ganeshbabu6565@gmail.com",
+      "email": "ganesh@gmail.com",
       "phone": "9825689575"
     },
     {
@@ -97,13 +141,28 @@
     },
     {
       "id": "W004",
-      "name": "Dry cleaning",
+      "name": "Dry Cleaning",
       "price": 2499
     },
     {
       "id": "W005",
       "name": "Body Painting",
       "price": 5000
+    },
+    {
+      "id": "W006",
+      "name": "Wheel Alignment",
+      "price": 800
+    },
+    {
+      "id": "W007",
+      "name": "Oil Change",
+      "price": 600
+    },
+    {
+      "id": "W008",
+      "name": "Brake Inspection",
+      "price": 400
     }
   ],
   "users": [
@@ -113,6 +172,30 @@
       "email": "a@gmail.com",
       "password": "123",
       "role": "admin"
+    },
+    {
+      "id": "U002",
+      "name": "Ganesh",
+      "email": "ganesh@gmail.com",
+      "password": "123",
+      "role": "sa",
+      "saId": "SA001"
+    },
+    {
+      "id": "U003",
+      "name": "Tharnish",
+      "email": "tharnish@gmail.com",
+      "password": "123",
+      "role": "sa",
+      "saId": "SA002"
+    },
+    {
+      "id": "U004",
+      "name": "Gopi",
+      "email": "gopi@gmail.com",
+      "password": "123",
+      "role": "customer",
+      "customerId": "C001"
     },
     {
       "name": "Persian",
@@ -127,6 +210,13 @@
       "password": "1234",
       "role": "admin",
       "id": "U1775887234913"
+    },
+    {
+      "name": "Purusothaman",
+      "email": "purusothaman@gmail.com",
+      "password": "1234",
+      "role": "customer",
+      "id": "U1776057616320"
     }
   ]
 }

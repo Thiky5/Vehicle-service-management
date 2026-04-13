@@ -38,7 +38,14 @@ export default function LoginPage() {
         localStorage.setItem("user", JSON.stringify(user));
       }
 
-      router.push("/admin");
+      // Role-based routing
+      if (user.role === "sa") {
+        router.push("/service-advisor");
+      } else if (user.role === "customer") {
+        router.push("/customer");
+      } else {
+        router.push("/admin");
+      }
     } catch (err) {
       console.error("Login error:", err);
       setError("Server error. Please try again later.");
@@ -50,13 +57,14 @@ export default function LoginPage() {
   return (
     <div style={styles.container}>
       <form onSubmit={handleLogin} style={styles.form}>
-        <h2 style={styles.title}>Login</h2>
+        <h2 style={styles.title}>Vehicle Service Management</h2>
+        <p style={styles.hint}>Login as Admin, Service Advisor, or Customer</p>
 
         {error && <p style={styles.error}>{error}</p>}
 
         <input
           type="email"
-          placeholder="Enter Admin Email"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           style={styles.input}
@@ -111,10 +119,18 @@ const styles = {
 
   title: {
     textAlign: "center",
-    marginBottom: "15px",
+    marginBottom: "4px",
     color: "#111827",
-    fontSize: "24px",
+    fontSize: "22px",
     fontWeight: "bold",
+  },
+
+  hint: {
+    textAlign: "center",
+    fontSize: "12px",
+    color: "#6b7280",
+    marginBottom: "16px",
+    marginTop: 0,
   },
 
   input: {

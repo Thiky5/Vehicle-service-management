@@ -7,11 +7,17 @@ import { getVehicleImage } from "../../utils/vehicleImages";
 
 export default function AdminDashboard() {
   const [vehicles, setVehicles] = useState([]);
-  
+  const [serviceAdvisors, setServiceAdvisors] = useState([]);
+  const [assignModal, setAssignModal] = useState(null); // vehicle being assigned
+  const [selectedSA, setSelectedSA] = useState("");
+
   useEffect(() => {
     apiFetch(endpoints.VEHICLES)
       .then(data => setVehicles(data))
       .catch(err => console.error("Error fetching vehicles:", err));
+    apiFetch(endpoints.SERVICE_ADVISORS)
+      .then(data => setServiceAdvisors(data))
+      .catch(err => console.error("Error fetching SAs:", err));
   }, []);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
@@ -34,14 +40,22 @@ export default function AdminDashboard() {
     });
   };
 
-  const assignToSA = (id) => {
-    apiFetch(`${endpoints.VEHICLES}/${id}`, {
+  const openAssignModal = (vehicle) => {
+    setAssignModal(vehicle);
+    setSelectedSA("");
+  };
+
+  const confirmAssign = () => {
+    if (!selectedSA) return;
+    const sa = serviceAdvisors.find(s => s.id === selectedSA);
+    apiFetch(`${endpoints.VEHICLES}/${assignModal.id}`, {
       method: "PATCH",
-      body: JSON.stringify({ status: "Under Servicing" })
+      body: JSON.stringify({ status: "Under Servicing", assignedSA: selectedSA })
     })
     .then(updatedVehicle => {
-      setVehicles((prev) => prev.map((v) => v.id === id ? updatedVehicle : v));
-      alert("Vehicle assigned to Service Advisor");
+      setVehicles((prev) => prev.map((v) => v.id === assignModal.id ? updatedVehicle : v));
+      setAssignModal(null);
+      alert(`Vehicle assigned to ${sa?.name || "Service Advisor"}`);
     });
   };
 
@@ -93,7 +107,7 @@ export default function AdminDashboard() {
 
                     <button
                       style={styles.assignBtn}
-                      onClick={() => assignToSA(v.id)}
+                      onClick={() => openAssignModal(v)}
                     >
                       Assign to SA
                     </button>
@@ -192,6 +206,59 @@ export default function AdminDashboard() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Assign to SA Modal */}
+        {assignModal && (
+          <div style={styles.modalOverlay}>
+            <div style={styles.modal}>
+              <h3 style={styles.modalHeader}>Assign to Service Advisor</h3>
+
+              <div style={styles.modalBody}>
+                <div style={styles.detailRow}>
+                  <strong>Vehicle:</strong>
+                  <span>{assignModal.reg}</span>
+                </div>
+                <div style={styles.detailRow}>
+                  <strong>Model:</strong>
+                  <span>{assignModal.model}</span>
+                </div>
+                <div style={{ marginTop: "8px" }}>
+                  <label style={{ fontSize: "14px", fontWeight: "600", color: "#475569", display: "block", marginBottom: "8px" }}>
+                    Select Service Advisor:
+                  </label>
+                  <select
+                    value={selectedSA}
+                    onChange={(e) => setSelectedSA(e.target.value)}
+                    style={styles.saSelect}
+                  >
+                    <option value="">-- Choose an SA --</option>
+                    {serviceAdvisors.map((sa) => (
+                      <option key={sa.id} value={sa.id}>
+                        {sa.name} ({sa.phone})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  style={{ ...styles.closeBtn, background: "#94a3b8", flex: 1 }}
+                  onClick={() => setAssignModal(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  style={{ ...styles.closeBtn, background: selectedSA ? "#f59e0b" : "#e2e8f0", flex: 1, cursor: selectedSA ? "pointer" : "not-allowed" }}
+                  onClick={confirmAssign}
+                  disabled={!selectedSA}
+                >
+                  Confirm Assign
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -390,5 +457,17 @@ const styles = {
     fontSize: "16px",
     fontWeight: "bold",
     transition: "background 0.2s",
+  },
+
+  saSelect: {
+    width: "100%",
+    padding: "10px 12px",
+    borderRadius: "8px",
+    border: "1px solid #e2e8f0",
+    fontSize: "14px",
+    color: "#1e293b",
+    background: "#f8fafc",
+    outline: "none",
+    cursor: "pointer",
   },
 };

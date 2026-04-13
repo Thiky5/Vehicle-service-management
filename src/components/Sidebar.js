@@ -7,6 +7,9 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user");
+    }
     alert("Logged out successfully");
     router.push("/login");
   };
