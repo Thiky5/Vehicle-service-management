@@ -7,6 +7,7 @@ export const apiFetch = async (endpoint, options = {}) => {
   try {
     const response = await fetch(url, {
       ...options,
+      cache: 'no-store',
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
@@ -14,14 +15,20 @@ export const apiFetch = async (endpoint, options = {}) => {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: "An error occurred" }));
-      throw new Error(error.message || `Fetch failed with status ${response.status}`);
+      let errorMessage = `Fetch failed with status ${response.status}`;
+      try {
+        const error = await response.json();
+        errorMessage = error.message || errorMessage;
+      } catch (e) {
+        // Fallback if response is not JSON
+      }
+      throw new Error(errorMessage);
     }
 
     return await response.json();
   } catch (error) {
-    // Silently handle errors to prevent UI crash
-    return endpoint.includes("/") ? {} : [];
+    console.error(`API Fetch Error [${endpoint}]:`, error);
+    throw error; // Rethrow so the caller can handle it
   }
 };
 

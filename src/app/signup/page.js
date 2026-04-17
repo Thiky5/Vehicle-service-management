@@ -36,16 +36,21 @@ export default function Signup() {
     setLoading(true);
 
     try {
+      const emailLower = formData.email.trim().toLowerCase();
       // Check if user already exists
       const users = await apiFetch(endpoints.USERS);
-      if (users.find((u) => u.email === formData.email)) {
+      if (users.find((u) => u.email.toLowerCase() === emailLower)) {
         setError("This email is already registered.");
         setLoading(false);
         return;
       }
 
       const userId = `U${Date.now()}`;
-      const newUser = { ...formData, id: userId };
+      const newUser = { 
+        ...formData, 
+        email: emailLower,
+        id: userId 
+      };
 
       // For SA role: also create a serviceAdvisor record
       if (formData.role === "sa") {
@@ -53,7 +58,7 @@ export default function Signup() {
         const saRecord = {
           id: saId,
           name: formData.name,
-          email: formData.email,
+          email: emailLower,
           phone: "",
         };
         await apiFetch(endpoints.SERVICE_ADVISORS, {
@@ -69,7 +74,7 @@ export default function Signup() {
         const customerRecord = {
           id: customerId,
           name: formData.name,
-          email: formData.email,
+          email: emailLower,
           phone: "",
         };
         await apiFetch(endpoints.CUSTOMERS, {
@@ -88,7 +93,7 @@ export default function Signup() {
       router.push("/login");
     } catch (err) {
       console.error("Signup error:", err);
-      setError("Failed to register. Please try again.");
+      setError("Registration failed. Data server might be offline.");
     } finally {
       setLoading(false);
     }

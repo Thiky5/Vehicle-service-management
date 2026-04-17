@@ -192,7 +192,10 @@
 .customer-main {
   flex: 1;
   padding: 28px 36px;
-  background: linear-gradient(135deg, #0f2027 0%, #203a43 60%, #2c5364 100%);
+  background: linear-gradient(135deg, rgba(15, 32, 39, 0.85) 0%, rgba(32, 58, 67, 0.85) 60%, rgba(44, 83, 100, 0.85) 100%), url('/customer-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
   min-height: 100vh;
   color: #f1f5f9;
   overflow-y: auto;

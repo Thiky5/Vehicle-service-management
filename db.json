@@ -67,9 +67,24 @@
       "status": "Dispatched",
       "assignedSA": "SA001",
       "billableItems": [
-        { "id": "W001", "name": "Engine Oil", "price": 1500, "quantity": 2 },
-        { "id": "W002", "name": "Fuel Filter", "price": 500, "quantity": 1 },
-        { "id": "W006", "name": "Wheel Alignment", "price": 800, "quantity": 1 }
+        {
+          "id": "W001",
+          "name": "Engine Oil",
+          "price": 1500,
+          "quantity": 2
+        },
+        {
+          "id": "W002",
+          "name": "Fuel Filter",
+          "price": 500,
+          "quantity": 1
+        },
+        {
+          "id": "W006",
+          "name": "Wheel Alignment",
+          "price": 800,
+          "quantity": 1
+        }
       ],
       "totalAmount": 4300,
       "paymentStatus": "Paid",
@@ -107,6 +122,30 @@
       "name": "Murugan",
       "email": "murugan@gmail.com",
       "phone": "9871234560"
+    },
+    {
+      "id": "C1776408100566",
+      "name": "Test User",
+      "email": "test@example.com",
+      "phone": ""
+    },
+    {
+      "id": "C1776057616320",
+      "name": "Purusothaman",
+      "email": "purusothaman@gmail.com",
+      "phone": ""
+    },
+    {
+      "id": "C1776408406182",
+      "name": "Fix Verify",
+      "email": "fixverify@example.com",
+      "phone": ""
+    },
+    {
+      "id": "C1776408738765",
+      "name": "rithik",
+      "email": "rithik@gmail.com",
+      "phone": ""
     }
   ],
   "serviceAdvisors": [
@@ -216,7 +255,32 @@
       "email": "purusothaman@gmail.com",
       "password": "1234",
       "role": "customer",
-      "id": "U1776057616320"
+      "id": "U1776057616320",
+      "customerId": "C1776057616320"
+    },
+    {
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "password123",
+      "role": "customer",
+      "id": "U1776408100566",
+      "customerId": "C1776408100566"
+    },
+    {
+      "name": "Fix Verify",
+      "email": "fixverify@example.com",
+      "password": "password123",
+      "role": "customer",
+      "id": "U1776408406182",
+      "customerId": "C1776408406182"
+    },
+    {
+      "name": "rithik",
+      "email": "rithik@gmail.com",
+      "password": "1234",
+      "role": "customer",
+      "id": "U1776408738765",
+      "customerId": "C1776408738765"
     }
   ]
 }

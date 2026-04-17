@@ -17,7 +17,7 @@ export default function CustomerSidebar() {
     <div style={styles.sidebar}>
       <div style={styles.logoWrap}>
         <span style={styles.logoIcon}>🚘</span>
-        <h2 style={styles.logo}>VSM</h2>
+        <h2 style={styles.logo}>Vehicle service management</h2>
       </div>
       <p style={styles.roleTag}>Customer Portal</p>
 

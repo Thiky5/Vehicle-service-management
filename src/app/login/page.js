@@ -26,13 +26,19 @@ export default function LoginPage() {
 
     try {
       const users = await apiFetch(endpoints.USERS);
-      const user = users.find(u => u.email === email && u.password === password);
+      console.log(`[Login] Fetched ${users.length} users from server.`);
+      
+      // Case-insensitive email search
+      const user = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase() && String(u.password) === String(password));
 
       if (!user) {
+        console.warn(`[Login] User not found for email: ${email}`);
         setError("Invalid email or password");
         setLoading(false);
         return;
       }
+
+      console.log(`[Login] Successfully found user: ${user.name} (Role: ${user.role})`);
 
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(user));
@@ -48,7 +54,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError("Server error. Please try again later.");
+      setError("Unable to connect to server. Please check your connection.");
     } finally {
       setLoading(false);
     }
