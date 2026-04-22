@@ -13,7 +13,7 @@ async function getLocalServerData(collection, id) {
   try {
     const url = id ? `${LOCAL_SERVER_URL}/${collection}/${id}` : `${LOCAL_SERVER_URL}/${collection}`;
     const res = await fetch(url, { 
-      signal: AbortSignal.timeout(2000),
+      signal: AbortSignal.timeout(500),
       cache: 'no-store' 
     }); 
     if (res.ok) return await res.json();
@@ -110,7 +110,7 @@ export async function POST(request) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json(await res.json());
   } catch (err) { }
@@ -138,7 +138,7 @@ export async function PATCH(request) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json(await res.json());
   } catch (err) { }
@@ -165,7 +165,7 @@ export async function DELETE(request) {
   try {
     const res = await fetch(`${LOCAL_SERVER_URL}/${collection}/${id}`, {
       method: "DELETE",
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json({ message: "Deleted" });
   } catch (err) { }
@@ -192,7 +192,7 @@ export async function PUT(request) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(500)
     });
     if (res.ok) return NextResponse.json(await res.json());
   } catch (err) { }

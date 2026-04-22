@@ -28,8 +28,11 @@ export default function LoginPage() {
       const users = await apiFetch(endpoints.USERS);
       console.log(`[Login] Fetched ${users.length} users from server.`);
       
-      // Case-insensitive email search
-      const user = users.find(u => u.email.toLowerCase() === email.trim().toLowerCase() && String(u.password) === String(password));
+      // Case-insensitive email search and password match
+      const user = users.find(u => 
+        u.email.toLowerCase() === email.trim().toLowerCase() && 
+        String(u.password).trim() === String(password).trim()
+      );
 
       if (!user) {
         console.warn(`[Login] User not found for email: ${email}`);

@@ -37,9 +37,13 @@ export default function Signup() {
 
     try {
       const emailLower = formData.email.trim().toLowerCase();
+      console.log(`[Signup] Starting signup for ${emailLower}...`);
+
       // Check if user already exists
+      console.log(`[Signup] Checking if user already exists...`);
       const users = await apiFetch(endpoints.USERS);
       if (users.find((u) => u.email.toLowerCase() === emailLower)) {
+        console.warn(`[Signup] User already exists: ${emailLower}`);
         setError("This email is already registered.");
         setLoading(false);
         return;
@@ -54,6 +58,7 @@ export default function Signup() {
 
       // For SA role: also create a serviceAdvisor record
       if (formData.role === "sa") {
+        console.log(`[Signup] Creating Service Advisor record...`);
         const saId = `SA${Date.now()}`;
         const saRecord = {
           id: saId,
@@ -66,10 +71,12 @@ export default function Signup() {
           body: JSON.stringify(saRecord),
         });
         newUser.saId = saId;
+        console.log(`[Signup] SA record created with ID: ${saId}`);
       }
 
       // For customer role: also create a customer record
       if (formData.role === "customer") {
+        console.log(`[Signup] Creating Customer record...`);
         const customerId = `C${Date.now()}`;
         const customerRecord = {
           id: customerId,
@@ -82,12 +89,16 @@ export default function Signup() {
           body: JSON.stringify(customerRecord),
         });
         newUser.customerId = customerId;
+        console.log(`[Signup] Customer record created with ID: ${customerId}`);
       }
 
+      console.log(`[Signup] Finalizing user registration...`);
       await apiFetch(endpoints.USERS, {
         method: "POST",
         body: JSON.stringify(newUser),
       });
+
+      console.log(`[Signup] Successfully registered user: ${emailLower}`);
 
       alert(`Account created! Login as ${ROLE_OPTIONS.find(r => r.value === formData.role)?.label}.`);
       router.push("/login");

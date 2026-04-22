@@ -146,6 +146,18 @@
       "name": "rithik",
       "email": "rithik@gmail.com",
       "phone": ""
+    },
+    {
+      "id": "C1776830116870",
+      "name": "Test Signup",
+      "email": "testsignup@example.com",
+      "phone": ""
+    },
+    {
+      "id": "C1776830825592",
+      "name": "abi",
+      "email": "abi@gmail.com",
+      "phone": ""
     }
   ],
   "serviceAdvisors": [
@@ -281,6 +293,14 @@
       "role": "customer",
       "id": "U1776408738765",
       "customerId": "C1776408738765"
+    },
+    {
+      "name": "abi",
+      "email": "abi@gmail.com",
+      "password": "12345",
+      "role": "customer",
+      "id": "U1776830825592",
+      "customerId": "C1776830825592"
     }
   ]
 }
